@@ -39,4 +39,25 @@ class MessageController extends Controller
             'data' => $messages
         ]);
     }
+
+    public function sendMessage(Request $request, $contact_id)
+    {
+        $user = auth('sanctum')->user();
+
+        $validated = $request->validate([
+            'content' => 'required|string|max:1000',
+        ]);
+
+        $message = Message::create([
+            'sender_id' => $user->id,
+            'recipient_id' => $contact_id,
+            'content' => $validated['content'],
+        ]);
+
+        return response()->json([
+            'message' => 'Message sent successfully!',
+            'data' => $message,
+        ]);
+    }
+   
 }
