@@ -4,21 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Models\Contact;
 use App\Models\User;
-use Illuminate\Http\Request;
 
 class ContactController extends Controller
 {
-    //TODO: Proper validation, denyRequest, showPending,
-
 
     public function sendRequest($contact_id)
     {
         $user = auth('sanctum')->user();
 
+        User::findOrFail($contact_id);
+
         $contact = Contact::firstOrCreate([
             'user_id' => $user->id, 
             'contact_id' => $contact_id,
         ]);
+
+        if(!$contact->accepted){
+            return response()->json(['message' => 'Contact request already sent!', 'contact' => $contact], 409);
+        }
 
         return response()->json(['message' => 'Contact request sent!', 'contact' => $contact]);
     }
@@ -27,11 +30,7 @@ class ContactController extends Controller
     {
         $user = auth('sanctum')->user();
 
-        if(!User::findOrFail($contact_id)){
-            return response()->json([
-                'message' => 'User not found'
-            ]);
-        }
+        User::findOrFail($contact_id);
 
         //           user_id and contact_id are flipped \/ here
         $contactRequest = Contact::where('contact_id', $user->id)
@@ -46,6 +45,7 @@ class ContactController extends Controller
             'contact' => $contactRequest,
         ]);
     }
+
     public function denyRequest($contact_id)
     {
         $user = auth('sanctum')->user();
@@ -70,13 +70,21 @@ class ContactController extends Controller
     {
         $contacts = auth('sanctum')->user()->contacts()->get();
 
-        return response()->json($contacts);
+        if ($contacts->isEmpty()) {
+            return response()->json(['message' => 'No contacts found'], 404);
+        }
+
+        return response()->json(['message' => 'Contacts retrieved'], $contacts);
     }
 
     public function showPending()
     {
         $contacts = auth('sanctum')->user()->contacts()->where('accepted', false)->get();
 
-        return response()->json($contacts);
+        if ($contacts->isEmpty()) {
+            return response()->json(['message' => 'No pending contacts found'], 404);
+        }
+
+        return response()->json(['message' => 'Pending contacts retrieved'], $contacts);
     }
 }
