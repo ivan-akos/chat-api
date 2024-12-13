@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EmailVerificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -17,9 +18,7 @@ Route::group(['prefix' => 'auth'], function () {
 
     // email verification routes
     Route::group(['prefix' => 'email'], function () {
-        Route::get('/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
-            // ->middleware(['auth:sanctum'])
-            ->name('verification.verify');
+        Route::get('/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])->name('verification.verify');
         Route::get('/resend', [EmailVerificationController::class, 'resend'])->name('verification.resend');
     });
 
@@ -27,4 +26,11 @@ Route::group(['prefix' => 'auth'], function () {
     Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('/logout', [UserAuthController::class, 'logout']);
     });
+});
+
+
+// routes for handling contacts     
+Route::group(['prefix' => 'contact', 'middleware' => ['auth:sanctum']], function () {
+    Route::post('/send-request/{contact_id}', [ContactController::class, 'sendRequest']);
+
 });
