@@ -38,7 +38,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'remember_token',
     ];
-
+    
     /**
      * Get the attributes that should be cast.
      *
@@ -49,6 +49,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'last_active_at' => 'datetime',
         ];
     }
 
@@ -64,9 +65,19 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(User::class, 'user_id');
     }
 
-    
     public function contactRequestRecieved(): HasMany
     {
         return $this->hasMany(User::class, 'contact_id');
     }
+
+    public function sentMessages(): HasMany
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    public function receivedMessages(): HasMany
+    {
+        return $this->hasMany(Message::class, 'recipient_id');
+    }
+
 }
