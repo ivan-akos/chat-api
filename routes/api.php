@@ -39,6 +39,7 @@ Route::group(['prefix' => 'contacts', 'middleware' => ['auth:sanctum']], functio
     Route::get('/requests/pending', [ContactController::class, 'showPending']);
     Route::post('/requests/{contact_id}', [ContactController::class, 'sendRequest']);       //maybe rename parameters?
     Route::post('/requests/{contact_id}/accept', [ContactController::class, 'acceptRequest']);
+    Route::post('/requests/{contact_id}/deny', [ContactController::class, 'denyRequest']);
 });
 
 //routes for messages
