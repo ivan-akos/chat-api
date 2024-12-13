@@ -15,6 +15,7 @@ class MessageController extends Controller
 
         $messages = $user->receivedMessages()
             ->where('sender_id', $contact_id)
+            ->where('recipient_id', $user->id)
             ->get();
 
         if(empty($messages)) {
@@ -23,6 +24,7 @@ class MessageController extends Controller
 
         $user->receivedMessages()
             ->where('sender_id', $contact_id)
+            ->where('recipient_id', $user->id)
             ->where('is_read', false)           // update unread messages
             ->update(['is_read' => true]);
     
@@ -39,7 +41,8 @@ class MessageController extends Controller
         User::findOrFail($contact_id);
 
         $messages = $user->sentMessages()
-            ->where('sender_id', $contact_id)
+            ->where('sender_id', $user->id)
+            ->where('recipient_id', $contact_id)
             ->get();
 
         if(empty($messages)) {

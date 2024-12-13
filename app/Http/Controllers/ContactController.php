@@ -68,23 +68,23 @@ class ContactController extends Controller
 
     public function showContacts()
     {
-        $contacts = auth('sanctum')->user()->contacts()->get();
+        $contacts = auth('sanctum')->user()->contacts()->firstOrFail();
 
         if ($contacts->isEmpty()) {
             return response()->json(['message' => 'No contacts found'], 404);
         }
 
-        return response()->json(['message' => 'Contacts retrieved'], $contacts);
+        return response()->json($contacts);
     }
 
     public function showPending()
     {
-        $contacts = auth('sanctum')->user()->contacts()->where('accepted', false)->get();
+        $contacts = auth('sanctum')->user()->contacts()->where('accepted', false)->firstOrFail();
 
         if ($contacts->isEmpty()) {
             return response()->json(['message' => 'No pending contacts found'], 404);
         }
 
-        return response()->json(['message' => 'Pending contacts retrieved'], $contacts);
+        return response()->json($contacts);
     }
 }
