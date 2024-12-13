@@ -23,15 +23,10 @@ class UserAuthController extends Controller
             'password'  => Hash::make($registerUserData['password']),
         ])->sendEmailVerificationNotification();
 
-        // $token = $user->createToken('auth_token')->plainTextToken;
-
         event(new Registered($user));
 
         return response()->json([
             'message'       => 'User registered',
-            'data'          => $user,
-            // 'access_token'  => $token,
-            'token_type'    => 'Bearer'
         ]);
     }
 
