@@ -11,9 +11,15 @@ class MessageController extends Controller
     public function retrieveFrom($contact_id){
         $user = auth('sanctum')->user();
 
+        User::findOrFail($contact_id);
+
         $messages = $user->receivedMessages()
             ->where('sender_id', $contact_id)
             ->get();
+
+        if(empty($messages)) {
+            return response()->json(['message' => 'No messages to retrieve.']);
+        }
 
         $user->receivedMessages()
             ->where('sender_id', $contact_id)
@@ -30,9 +36,15 @@ class MessageController extends Controller
     {    
         $user = auth('sanctum')->user();
 
+        User::findOrFail($contact_id);
+
         $messages = $user->sentMessages()
             ->where('sender_id', $contact_id)
             ->get();
+
+        if(empty($messages)) {
+            return response()->json(['message' => 'No sent messages yet.']);
+        }
 
         return response()->json([
             'message' => 'Messages retrieved',
@@ -42,11 +54,13 @@ class MessageController extends Controller
 
     public function sendMessage(Request $request, $contact_id)
     {
-        $user = auth('sanctum')->user();
-
         $validated = $request->validate([
             'content' => 'required|string|max:1000',
         ]);
+
+        $user = auth('sanctum')->user();
+
+        User::findOrFail($contact_id);
 
         $message = Message::create([
             'sender_id' => $user->id,
