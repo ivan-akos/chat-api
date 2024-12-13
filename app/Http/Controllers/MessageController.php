@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Message;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class MessageController extends Controller
@@ -20,6 +22,20 @@ class MessageController extends Controller
     
         return response()->json([
             'message' => 'Messages retrieved', 
+            'data' => $messages
+        ]);
+    }
+
+    public function retrieveTo($contact_id)
+    {    
+        $user = auth('sanctum')->user();
+
+        $messages = $user->sentMessages()
+            ->where('sender_id', $contact_id)
+            ->get();
+
+        return response()->json([
+            'message' => 'Messages retrieved',
             'data' => $messages
         ]);
     }
