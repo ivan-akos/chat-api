@@ -2,9 +2,12 @@
 
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EmailVerificationController;
+use App\Http\Controllers\MessageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserAuthController;
+use App\Http\Controllers\UserController;
+use App\Http\Middleware\UserActivity;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -28,9 +31,19 @@ Route::group(['prefix' => 'auth'], function () {
     });
 });
 
+Route::get('/users', [UserController::class, 'index'])->middleware(UserActivity::class); 
 
 // routes for handling contacts     
-Route::group(['prefix' => 'contact', 'middleware' => ['auth:sanctum']], function () {
-    Route::post('/send-request/{contact_id}', [ContactController::class, 'sendRequest']);
-    Route::post('/accept-request/{contact_id}', [ContactController::class, 'acceptRequest']);
+Route::group(['prefix' => 'contacts', 'middleware' => ['auth:sanctum']], function () {
+    Route::get('/', [ContactController::class, 'showContacts']);
+    Route::get('/requests/pending', [ContactController::class, 'showPending']);
+    Route::post('/requests/{contact_id}', [ContactController::class, 'sendRequest']);       //maybe rename parameters?
+    Route::post('/requests/{contact_id}/accept', [ContactController::class, 'acceptRequest']);
+});
+
+//routes for messages
+Route::group(['prefix' => 'messages', 'middleware' => ['auth:sanctum']], function () {
+    Route::get('/from/{contact_id}', [MessageController::class, 'retrieveFrom']);
+    Route::get('/to/{contact_id}', [MessageController::class, 'retrieveTo']);
+    Route::post('/{contact_Id}', [MessageController::class, 'sendMessage']);
 });
