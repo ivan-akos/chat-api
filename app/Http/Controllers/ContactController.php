@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class ContactController extends Controller
 {
-    //TODO: Proper validation, denyRequest, showPending
+    //TODO: Proper validation, denyRequest, showPending,
 
 
     public function sendRequest($contact_id)
@@ -45,5 +45,19 @@ class ContactController extends Controller
             'message' => 'Contact request accepted!',
             'contact' => $contactRequest,
         ]);
+    }
+
+    public function showContacts()
+    {
+        $contacts = auth('sanctum')->user()->contacts()->get();
+
+        return response()->json($contacts);
+    }
+
+    public function showPending()
+    {
+        $contacts = auth('sanctum')->user()->contacts()->where('accepted', false)->get();
+
+        return response()->json($contacts);
     }
 }
