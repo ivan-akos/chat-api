@@ -46,6 +46,25 @@ class ContactController extends Controller
             'contact' => $contactRequest,
         ]);
     }
+    public function denyRequest($contact_id)
+    {
+        $user = auth('sanctum')->user();
+
+        User::findOrFail($contact_id);
+
+        //           user_id and contact_id are flipped \/ here
+        $contactRequest = Contact::where('contact_id', $user->id)
+                                ->where('user_id', $contact_id)
+                                ->where('accepted', false)
+                                ->firstOrFail();
+
+        $contactRequest->delete();
+
+        return response()->json([
+            'message' => 'Contact request denied!',
+            'contact' => $contactRequest,
+        ]);
+    }
 
     public function showContacts()
     {
