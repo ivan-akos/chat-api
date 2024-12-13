@@ -11,9 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::dropIfExists('messages');
         Schema::create('messages', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary(); 
+            $table->uuid('sender_id'); 
+            $table->uuid('recipient_id'); 
+            $table->text('content');
+            $table->boolean('is_read')->default(false); 
+            $table->softDeletes(); 
             $table->timestamps();
+
+            $table->foreign('sender_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('recipient_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
