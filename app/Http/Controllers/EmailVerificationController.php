@@ -27,6 +27,6 @@ class EmailVerificationController extends Controller
 
     public function resend()
     {
-
+        //TODO
     }
 }
