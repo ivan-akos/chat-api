@@ -32,5 +32,5 @@ Route::group(['prefix' => 'auth'], function () {
 // routes for handling contacts     
 Route::group(['prefix' => 'contact', 'middleware' => ['auth:sanctum']], function () {
     Route::post('/send-request/{contact_id}', [ContactController::class, 'sendRequest']);
-
+    Route::post('/accept-request/{contact_id}', [ContactController::class, 'acceptRequest']);
 });
